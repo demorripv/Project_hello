@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bom xmlns="http://cyclonedx.org/schema/bom/1.6" serialNumber="urn:uuid:cb16b8d6-1fed-490e-9b66-a4b9fcf30240" version="1"><metadata><timestamp>2024-07-31T19:54:33-04:00</timestamp><tools><components><component type="application"><author>anchore</author><name>syft</name><version>1.10.0</version></component></components></tools><component bom-ref="be638703f4800199" type="file"><name>S32K144_Project_Hello.elf</name><version>sha256:848ec39e4406e0b67ef4aef61834185d048b9905dd044565f26d63d85e08b184</version></component></metadata></bom>

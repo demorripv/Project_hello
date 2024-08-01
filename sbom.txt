@@ -1,0 +1,2 @@
+[Path: S32K144_Project_Hello.elf]
+No packages discovered
