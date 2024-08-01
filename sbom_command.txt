@@ -4,3 +4,8 @@ syft S32K144_Project_Hello.elf -o json > sbom1.txt
 syft S32K144_Project_Hello.elf -o syft-text > sbom.txt
 syft dir:. -o cyclonedx-json > sbom.json
 syft dir:.
+
+guix shell --network -C --share=/home/vipr-demo1/S32K144_Project_Hello=/mnt/S32K144_Project_Hello  -e '((@(gnu packages embedded) make-arm-none-eabi-toolchain-6))' git inetutils bind make gcc 
+guix shell: package 'gcc' has been superseded by 'gcc-toolchain'
+vipr-demo1@viprdemo1 ~/S32K144_Project_Hello [env]$ make
+arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -O2 -Wall -Wextra -DCPU_S32K144HFT0VLLT -Iinclude src/main.o Project_Settings/Startup_Code/startup.o Project_Settings/Startup_Code/system_S32K144.o Project_Settings/Startup_Code/syscalls.o -T Project_Settings/Linker_Files/S32K1xx_flash.ld -o S32K144_Project_Hello.elf
