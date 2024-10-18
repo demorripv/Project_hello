@@ -43,7 +43,7 @@
 
 /*! Port PTD0, bit 0: FRDM EVB output to blue LED
  */
-#define PTD0  0
+#define PTD0  0 //winie  
 
 /*! Port PTC12, bit 12: FRDM EVB input from BTN0 [SW2]
  */
