@@ -92,9 +92,10 @@ int main(void)
 	PORTD->PCR[0] = PORT_PCR_MUX(1); /* Port D0: MUX = GPIO */
 
 	/*!
-	 * Infinite for:
+	 * Infinite for:123
 	 * ========================
 	 */
+
 		for(;;)
 		{
 
