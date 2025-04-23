@@ -1,0 +1,111 @@
+pipeline {
+    agent any
+
+    parameters {
+        string(name: 'REPO_NAME', defaultValue: 'S32K144_Project', description: 'Repository name')
+        string(name: 'COMMIT_HASH', defaultValue: '', description: 'Commit hash from Node A')
+        string(name: 'DIFF_HASH', defaultValue: '', description: 'SHA-256 hash of the original patch file')
+        string(name: 'CHANNEL_NAME', defaultValue: 'mychannel1205', description: 'Fabric channel name')
+    }
+
+    environment {
+        PATCH_DIR  = "${env.HOME}/project/${params.REPO_NAME}"
+        PATCH_FILE = "${env.HOME}/project/${params.REPO_NAME}/${params.REPO_NAME}_${params.COMMIT_HASH}.patch"
+    }
+
+    stages {
+
+        stage('Send Patch & Apply on B, C, and D') {
+            steps {
+                script {
+                    def remoteRepoPath = "~/project/${params.REPO_NAME}"
+
+                    // Send patch to all 3 nodes
+                    sh """
+                        scp "${env.PATCH_FILE}" vipr@192.168.0.169:${remoteRepoPath}/
+                        scp "${env.PATCH_FILE}" vipr@192.168.0.170:${remoteRepoPath}/
+                        scp "${env.PATCH_FILE}" vipr@192.168.0.171:${remoteRepoPath}/
+                    """
+
+                    // Apply patch on all 3 nodes
+                    def applyCmd = "cd ${remoteRepoPath} && git reset --hard && git apply ${params.REPO_NAME}_${params.COMMIT_HASH}.patch"
+                    sh "ssh vipr@192.168.0.169 '${applyCmd}'"
+                    sh "ssh vipr@192.168.0.170 '${applyCmd}'"
+                    sh "ssh vipr@192.168.0.171 '${applyCmd}'"
+                }
+            }
+        }
+
+        stage('Hash main.c on B, C, and D') {
+            steps {
+                script {
+                    def hashCmd = { ip ->
+                        return sh(
+                            script: """
+                                ssh vipr@${ip} "sha256sum ~/project/${params.REPO_NAME}/src/main.c | awk '{print \\$1}'"
+                            """,
+                            returnStdout: true
+                        ).trim()
+                    }
+
+                    def hashB = hashCmd('192.168.0.169')
+                    def hashC = hashCmd('192.168.0.170')
+                    def hashD = hashCmd('192.168.0.171')
+
+                    echo "Hash B (.169): ${hashB}"
+                    echo "Hash C (.170): ${hashC}"
+                    echo "Hash D (.171): ${hashD}"
+
+                    env.HASH_B = hashB
+                    env.HASH_C = hashC
+                    env.HASH_D = hashD
+                }
+            }
+        }
+
+        stage('Compare File Hashes') {
+            steps {
+                script {
+                    if (env.HASH_B == env.HASH_C && env.HASH_B == env.HASH_D) {
+                        echo "All three hashes match: ${env.HASH_B}"
+                        env.STATUS = "consistent"
+                    } else {
+                        echo "Hash mismatch detected"
+                        echo "B: ${env.HASH_B}, C: ${env.HASH_C}, D: ${env.HASH_D}"
+                        env.STATUS = "inconsistent"
+                        error("Hashes do not match")
+                    }
+                }
+            }
+        }
+
+        stage('Store Verification Result on Blockchain') {
+            steps {
+                script {
+                    def timestamp = sh(
+                        script: "date -u +\"%Y-%m-%dT%H:%M:%SZ\"",
+                        returnStdout: true
+                    ).trim()
+
+                    sh """
+                        /home/vipr-demo/go/src/github.com/hyperledger/fabric-samples/asset-transfer-basic/application-gateway-go/gitTransfer \
+                          -storeVerifiedHash \
+                          -repo ${params.REPO_NAME} \
+                          -hash ${params.COMMIT_HASH} \
+                          -status ${env.STATUS} \
+                          -timestamp ${timestamp}
+                    """
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo " Verification and sync completed successfully"
+        }
+        failure {
+            echo "Review hash mismatch"
+        }
+    }
+}
