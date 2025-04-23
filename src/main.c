@@ -118,3 +118,8 @@ int main(void)
 	 * Infinite 
 	 * =======s
 	 **********/
+
+/*2
+	 * Infinite 
+	 * =======s
+	 **********/
