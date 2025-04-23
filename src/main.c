@@ -123,3 +123,7 @@ int main(void)
 	 * Infinite 
 	 * =======s
 	 **********/
+/*3
+	 * Infinite 
+	 * =======s
+	 **********/
