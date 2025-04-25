@@ -116,7 +116,7 @@ int main(void)
 }
 /*!
 	 * Infinite 
-	 * =======sss
+	 * =======ssss
 	 **********/
 
 /*2
