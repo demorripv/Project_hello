@@ -121,7 +121,7 @@ int main(void)
 
 /*2
 	 * Infinite 
-	 * =======sssssssssss
+	 * =======ssssssssssss
 	 **********/
 /*3
 	 * Infinite 
