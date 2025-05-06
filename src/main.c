@@ -116,7 +116,7 @@ int main(void)
 }
 /*!
 	 * Infinite 
-	 * =======ssssssssssssssssWinifred
+	 * =======ssssssssssssssssWini
 
 /*2
 	 * Infinite 
