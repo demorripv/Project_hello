@@ -120,7 +120,7 @@ int main(void)
 
 /*2
 	 * Infinite 
-	 * =======ssssssssssssswini
+	 * =======ssssssssssssswini1
 	 **********/
 /*3
 	 * Infinite 
