@@ -124,6 +124,6 @@ int main(void)
 	 **********/
 /*3
 	 * Infinite 
-	 * =======ssssssssssss12345678910111213141516171819203
+	 * =======ssssssssssss
 	 * 
 	 **********/
