@@ -1,0 +1,26 @@
+From eded4cda569b934e6277d76cf24b0550e79e6234 Mon Sep 17 00:00:00 2001
+From: demorripv <iaideya@clemson.edu>
+Date: Fri, 25 Apr 2025 13:13:21 -0400
+Subject: [PATCH] added  1st 13th s line
+
+---
+ src/main.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/src/main.c b/src/main.c
+index 8239abd..59070f4 100644
+--- a/src/main.c
++++ b/src/main.c
+@@ -116,8 +116,7 @@ int main(void)
+ }
+ /*!
+ 	 * Infinite 
+-	 * =======sssssssssss
+-	 **********/
++	 * =======ssssssssssss
+ 
+ /*2
+ 	 * Infinite 
+-- 
+2.25.1
+

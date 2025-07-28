@@ -1,0 +1,24 @@
+From e83610b777810bd6ba6b733ef6acc0f0902eabc0 Mon Sep 17 00:00:00 2001
+From: demorripv <iaideya@clemson.edu>
+Date: Wed, 23 Apr 2025 15:31:56 -0400
+Subject: [PATCH] added 1 s line
+
+---
+ src/main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/main.c b/src/main.c
+index f6729b8..528d510 100644
+--- a/src/main.c
++++ b/src/main.c
+@@ -125,5 +125,5 @@ int main(void)
+ 	 **********/
+ /*3
+ 	 * Infinite 
+-	 * =======s
++	 * =======ss
+ 	 **********/
+\ No newline at end of file
+-- 
+2.25.1
+

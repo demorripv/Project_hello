@@ -1,0 +1,28 @@
+From 894c5db5ead2420471754a531603df0a870217b8 Mon Sep 17 00:00:00 2001
+From: demorripv <iaideya@clemson.edu>
+Date: Wed, 23 Apr 2025 14:58:48 -0400
+Subject: [PATCH] added third infinite line
+
+---
+ src/main.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/src/main.c b/src/main.c
+index e0836ee..f6729b8 100644
+--- a/src/main.c
++++ b/src/main.c
+@@ -120,6 +120,10 @@ int main(void)
+ 	 **********/
+ 
+ /*2
++	 * Infinite 
++	 * =======s
++	 **********/
++/*3
+ 	 * Infinite 
+ 	 * =======s
+ 	 **********/
+\ No newline at end of file
+-- 
+2.25.1
+

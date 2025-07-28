@@ -1,0 +1,205 @@
+pipeline {
+    agent any
+
+    parameters {
+        string(name: 'REPO_NAME', defaultValue: '', description: 'Name of the repository')
+        string(name: 'REPO_URL', defaultValue: '', description: 'Repository URL to synchronize')
+        string(name: 'COMMIT_HASH', defaultValue: '', description: 'Commit hash to synchronize')
+        string(name: 'CHANNEL_NAME', defaultValue: '', description: 'Channel name')
+    }
+
+    stages {
+        stage('Determine Default Branch') {
+            steps {
+                script {
+                    echo "Checking default branch for repository: ${params.REPO_URL}"
+        
+                    // Use git ls-remote --symref and parse out the first line that defines HEAD
+                    def defaultBranch = sh(
+                        script: """
+                          git ls-remote --symref ${params.REPO_URL} HEAD \
+                          | awk 'NR==1 { print \$2 }' \
+                          | sed 's|refs/heads/||'
+                        """,
+                        returnStdout: true
+                    ).trim()
+        
+                    if (!defaultBranch) {
+                        error "Could not determine the default branch. Ensure the repository URL is correct."
+                    }
+        
+                    // Store it in an environment variable so it can be used in subsequent stages
+                    env.DEFAULT_BRANCH = defaultBranch
+                    echo "Default branch detected: ${env.DEFAULT_BRANCH}"
+                }
+            }
+        }
+
+
+        stage('Clone Repositories on All VMs & Measure SYNC time') {
+            steps {
+                script {
+                    // List of VM IPs
+                    def vmIPs = ["192.168.0.169", "192.168.0.170", "192.168.0.171"]
+        
+                    vmIPs.each { vmIP ->
+                        echo "Syncing repository ${params.REPO_NAME} on ${vmIP}..."
+                        withCredentials([sshUserPrivateKey(credentialsId: 'vm2-ssh', keyFileVariable: 'SSH_KEY')]) {
+                            
+                            //capture start time 
+                            def startTime = System.currentTimeMillis() / 1000
+                            sh """
+ssh -i ${SSH_KEY} -o StrictHostKeyChecking=no vipr-demo@${vmIP} 'bash -s' <<EOF
+set -e  # Exit on error
+
+echo "Checking if repository exists on ${vmIP}..."
+echo "REPO_URL: ${params.REPO_URL}"
+echo "DEFAULT_BRANCH: ${env.DEFAULT_BRANCH}"
+echo "Repository path: ~/${params.REPO_NAME}"
+
+if [ -d ~/${params.REPO_NAME} ]; then
+echo "Repository exists. Fetching latest updates..."
+cd ~/${params.REPO_NAME}
+git fetch origin ${env.DEFAULT_BRANCH}
+git checkout ${env.DEFAULT_BRANCH}
+git pull origin ${env.DEFAULT_BRANCH}
+else
+echo "Repository does not exist. Cloning..."
+git clone -b ${env.DEFAULT_BRANCH} ${params.REPO_URL} ~/${params.REPO_NAME}
+cd ~/${params.REPO_NAME}
+git checkout ${params.COMMIT_HASH}
+fi
+EOF
+"""
+                             // Capture End Time
+                            def endTime = System.currentTimeMillis() / 1000
+                            def syncTime = endTime - startTime
+                            
+                            echo "Synchronization Time on ${vmIP}: ${syncTime} seconds"
+
+                            // Save sync time to a Prometheus-compatible file on each VM
+                            sh """
+ssh -i ${SSH_KEY} -o StrictHostKeyChecking=no vipr-demo@${vmIP} 'echo "git_sync_time_seconds ${syncTime}" > ~/git_sync_time.prom'
+"""
+                        }
+                    }
+                }
+            }
+        } 
+
+        stage('Verify Commit Hashes on All VMs') {
+            steps {
+                script {
+                    // List of VM IPs
+                    def vmIPs = ["192.168.0.169", "192.168.0.170", "192.168.0.171"]
+                    def hashes = []
+        
+                    vmIPs.each { vmIP ->
+                        echo "Verifying commit hash on ${vmIP}..."
+                        withCredentials([sshUserPrivateKey(credentialsId: 'vm2-ssh', keyFileVariable: 'SSH_KEY')]) {
+                            def retrievedHash = sh(
+                                script: """
+                                    ssh -i ${SSH_KEY} -o StrictHostKeyChecking=no vipr-demo@${vmIP} \\
+                                    'cd \$HOME/${params.REPO_NAME} && git rev-parse HEAD'
+                                """,
+                                returnStdout: true
+                            ).trim()
+        
+                            echo "Commit hash on ${vmIP}: ${retrievedHash}"
+                            hashes << retrievedHash
+                        }
+                    }
+        
+                    // Ensure all hashes are identical and match the expected commit
+                    def expectedHash = params.COMMIT_HASH.trim()
+                    def uniqueHashes = hashes.unique()
+        
+                    if (uniqueHashes.size() > 1) {
+                        // Mismatch among VMs
+                        env.SYNC_STATUS = "FAIL"
+                        echo "ERROR: Hashes do not match across VMs! Retrieved hashes: ${hashes}"
+                    } else if (uniqueHashes[0] != expectedHash) {
+                        // All VMs have the same hash, but it doesn't match the expected
+                        env.SYNC_STATUS = "FAIL"
+                        echo "ERROR: Hashes match across VMs but do not match the expected hash! \n" +
+                             "       Expected: ${expectedHash}, Found: ${uniqueHashes[0]}"
+                    } else {
+                        // All match and are correct
+                        env.SYNC_STATUS = "SUCCESS"
+                        echo "SUCCESS: All VMs have the correct commit hash: ${uniqueHashes[0]}"
+                    }
+                    
+                    // IMPORTANT: Do NOT call error(...). We just set SYNC_STATUS and continue.
+                }
+            }
+        }
+        
+        stage('Set Env') {
+            steps {
+                sh '''
+                  
+                  . /home/vipr-demo/hlf-env.sh
+                  echo "FABRIC_CFG_PATH=$FABRIC_CFG_PATH"
+                  peer version
+                '''
+            }
+        }
+    
+        stage('Record Sync Status') {
+            steps {
+                script {
+                    // 1. Retrieve the CHANNEL_NAME from environment
+                    def channelName = params.CHANNEL_NAME.trim()
+        
+                    if (!channelName) {
+                        error "CHANNEL_NAME is not set. Please export it before running the pipeline."
+                    }
+        
+                    echo "Using CHANNEL_NAME: ${channelName}"
+        
+                    // 2. Grab the SYNC_STATUS from Stage 3 (either "SUCCESS" or "FAIL")
+                    def status = env.SYNC_STATUS ?: 'UNKNOWN'
+                    echo "Recording sync status: ${status}"
+        
+                    // 3. Generate ISO 8601 UTC timestamp
+                    def timestamp = sh(
+                        script: "date -u +\"%Y-%m-%dT%H:%M:%SZ\"",
+                        returnStdout: true
+                    ).trim()
+        
+                    echo "Timestamp: ${timestamp}"
+                    def chaincodeOutput = sh(
+                        script: """
+                            #!/usr/bin/env bash
+                            set -e
+
+                           # Dot-source your environment setup so 'peer' is on PATH, etc.
+                            . /home/vipr-demo/hlf-env.sh
+                            peer version
+                            
+
+                            echo "Invoking chaincode to store sync status..."
+                            peer chaincode invoke -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com \\
+                                --tls --cafile "/home/vipr-demo/go/src/github.com/hyperledger/fabric-samples/test-network/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem" \\
+                                -C ${channelName} -n git \\
+                                -c '{"function":"StoreVerifiedHash","Args":["${params.REPO_NAME}", "${params.COMMIT_HASH}", "${status}", "${timestamp}"]}'
+                        """,
+                        returnStdout: true
+                    ).trim()
+                    
+                    echo "Chaincode command output:\n${chaincodeOutput}"
+
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "Pipeline completed successfully for all VMs."
+        }
+        failure {
+            echo "Pipeline failed. Check logs for details."
+        }
+    }
+}

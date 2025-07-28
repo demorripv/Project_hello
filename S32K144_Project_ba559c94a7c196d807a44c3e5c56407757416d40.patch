@@ -1,0 +1,24 @@
+From ba559c94a7c196d807a44c3e5c56407757416d40 Mon Sep 17 00:00:00 2001
+From: demorripv <iaideya@clemson.edu>
+Date: Thu, 24 Apr 2025 11:15:24 -0400
+Subject: [PATCH] added 4th s line
+
+---
+ src/main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/main.c b/src/main.c
+index a7df5e1..aa1e43d 100644
+--- a/src/main.c
++++ b/src/main.c
+@@ -125,5 +125,5 @@ int main(void)
+ 	 **********/
+ /*3
+ 	 * Infinite 
+-	 * =======sss
++	 * =======ssss
+ 	 **********/
+\ No newline at end of file
+-- 
+2.25.1
+

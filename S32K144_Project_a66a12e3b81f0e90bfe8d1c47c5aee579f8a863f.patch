@@ -1,0 +1,24 @@
+From a66a12e3b81f0e90bfe8d1c47c5aee579f8a863f Mon Sep 17 00:00:00 2001
+From: demorripv <iaideya@clemson.edu>
+Date: Fri, 25 Apr 2025 11:39:48 -0400
+Subject: [PATCH] added 8th s line
+
+---
+ src/main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/main.c b/src/main.c
+index 4b8a16a..a978936 100644
+--- a/src/main.c
++++ b/src/main.c
+@@ -125,5 +125,5 @@ int main(void)
+ 	 **********/
+ /*3
+ 	 * Infinite 
+-	 * =======sssssss
++	 * =======ssssssss
+ 	 **********/
+\ No newline at end of file
+-- 
+2.25.1
+

@@ -1,0 +1,24 @@
+From 16767511d44c28e1002b898874da26e2c5fb80aa Mon Sep 17 00:00:00 2001
+From: demorripv <iaideya@clemson.edu>
+Date: Fri, 25 Apr 2025 12:01:48 -0400
+Subject: [PATCH] added 11th s line
+
+---
+ src/main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/main.c b/src/main.c
+index a0c64c3..be0b56c 100644
+--- a/src/main.c
++++ b/src/main.c
+@@ -125,5 +125,5 @@ int main(void)
+ 	 **********/
+ /*3
+ 	 * Infinite 
+-	 * =======ssssssssss
++	 * =======sssssssssss
+ 	 **********/
+\ No newline at end of file
+-- 
+2.25.1
+

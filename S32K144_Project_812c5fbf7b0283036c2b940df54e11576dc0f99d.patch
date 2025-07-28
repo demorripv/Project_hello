@@ -1,0 +1,29 @@
+From 812c5fbf7b0283036c2b940df54e11576dc0f99d Mon Sep 17 00:00:00 2001
+From: demorripv <iaideya@clemson.edu>
+Date: Wed, 23 Apr 2025 10:57:03 -0400
+Subject: [PATCH] added second infinite line
+
+---
+ src/main.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/src/main.c b/src/main.c
+index eacaca4..e0836ee 100644
+--- a/src/main.c
++++ b/src/main.c
+@@ -115,6 +115,11 @@ int main(void)
+ 		}
+ }
+ /*!
++	 * Infinite 
++	 * =======s
++	 **********/
++
++/*2
+ 	 * Infinite 
+ 	 * =======s
+ 	 **********/
+\ No newline at end of file
+-- 
+2.25.1
+

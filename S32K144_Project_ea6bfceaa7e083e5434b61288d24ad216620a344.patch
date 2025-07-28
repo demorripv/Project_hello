@@ -1,0 +1,24 @@
+From ea6bfceaa7e083e5434b61288d24ad216620a344 Mon Sep 17 00:00:00 2001
+From: demorripv <iaideya@clemson.edu>
+Date: Fri, 25 Apr 2025 12:06:04 -0400
+Subject: [PATCH] added 12th s line
+
+---
+ src/main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/main.c b/src/main.c
+index be0b56c..94260db 100644
+--- a/src/main.c
++++ b/src/main.c
+@@ -125,5 +125,5 @@ int main(void)
+ 	 **********/
+ /*3
+ 	 * Infinite 
+-	 * =======sssssssssss
++	 * =======ssssssssssss
+ 	 **********/
+\ No newline at end of file
+-- 
+2.25.1
+

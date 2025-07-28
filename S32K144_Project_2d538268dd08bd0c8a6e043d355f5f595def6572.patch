@@ -1,0 +1,25 @@
+From 2d538268dd08bd0c8a6e043d355f5f595def6572 Mon Sep 17 00:00:00 2001
+From: demorripv <iaideya@clemson.edu>
+Date: Fri, 25 Apr 2025 12:37:11 -0400
+Subject: [PATCH] added  2nd 11th s line
+
+---
+ src/main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/main.c b/src/main.c
+index 98107bd..b0742b4 100644
+--- a/src/main.c
++++ b/src/main.c
+@@ -121,7 +121,7 @@ int main(void)
+ 
+ /*2
+ 	 * Infinite 
+-	 * =======ssssssssss
++	 * =======sssssssssss
+ 	 **********/
+ /*3
+ 	 * Infinite 
+-- 
+2.25.1
+

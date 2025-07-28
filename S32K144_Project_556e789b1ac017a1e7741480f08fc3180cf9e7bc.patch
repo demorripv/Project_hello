@@ -1,0 +1,24 @@
+From 556e789b1ac017a1e7741480f08fc3180cf9e7bc Mon Sep 17 00:00:00 2001
+From: demorripv <iaideya@clemson.edu>
+Date: Fri, 18 Apr 2025 22:36:15 -0400
+Subject: [PATCH] edit
+
+---
+ src/main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/main.c b/src/main.c
+index 78b8bba..eacaca4 100644
+--- a/src/main.c
++++ b/src/main.c
+@@ -117,4 +117,4 @@ int main(void)
+ /*!
+ 	 * Infinite 
+ 	 * =======s
+-	 ********/
+\ No newline at end of file
++	 **********/
+\ No newline at end of file
+-- 
+2.25.1
+
