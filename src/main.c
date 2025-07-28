@@ -53,7 +53,7 @@ void WDOG_disable (void)
 {
   WDOG->CNT=0xD928C520;     /* Unlock watchdog 		*/
   WDOG->TOVAL=0x0000FFFF;   /* Maximum timeout value 	*/
-  WDOG->CS = 0x0000221116;  /* Disable watchdog 	changed from 21 to 22 */ 
+  WDOG->CS = 0x0000221117;  /* Disable watchdog 	changed from 21 to 22 */ 
 }
 
 int main(void)
